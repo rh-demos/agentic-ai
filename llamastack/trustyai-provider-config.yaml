@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trustyai-provider-config
+data:
+  trustyai_fms.yaml: |
+    adapter:
+      adapter_type: trustyai_fms
+      config_class: llama_stack_provider_trustyai_fms.config.FMSSafetyProviderConfig
+      module: llama_stack_provider_trustyai_fms
+    api_dependencies:
+      - safety
+    optional_api_dependencies:
+      - shields
