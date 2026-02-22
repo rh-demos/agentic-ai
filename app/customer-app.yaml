@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fantaco-customer-secret
+type: Opaque
+stringData:
+  database.password: "dummy"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fantaco-customer-config
+  labels:
+    app: fantaco-customer-main
+data:
+  database.url: "jdbc:postgresql://postgres-cust:5432/fantaco_customer"
+  database.username: "postgres"
+  application.properties: |
+    spring.jpa.hibernate.ddl-auto=update
+    spring.jpa.show-sql=false
+    logging.level.com.customer=INFO
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fantaco-customer-main
+  labels:
+    app: fantaco-customer-main
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fantaco-customer-main
+  template:
+    metadata:
+      labels:
+        app: fantaco-customer-main
+    spec:
+      containers:
+      - name: fantaco-customer-main
+        image: quay.io/jonkey/fantaco-customer-main:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8081
+          name: http
+          protocol: TCP
+        env:
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: fantaco-customer-config
+              key: database.url
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: fantaco-customer-config
+              key: database.username
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: fantaco-customer-secret
+              key: database.password
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8081
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fantaco-customer-service
+  labels:
+    app: fantaco-customer-main
+spec:
+  type: ClusterIP
+  selector:
+    app: fantaco-customer-main
+  ports:
+  - name: http
+    port: 8081
+    targetPort: 8081
+    protocol: TCP

@@ -9,7 +9,7 @@ data:
   run.yaml: |
     # Llama Stack Configuration
     version: "2"
-    image_name: remote-vllm
+    image_name: llama-stack
     apis:
     - agents
     - datasetio
@@ -45,10 +45,10 @@ data:
         config:
           db_path: /opt/app-root/src/.llama/distributions/rh/milvus.db
           kvstore:
-            backend: default
+            backend: kv_default
             namespace: "milvus"
           persistence:
-            backend: default
+            backend: kv_default
             namespace: "milvus_persistence"
       agents:
       - provider_id: meta-reference
@@ -56,10 +56,10 @@ data:
         config:
           persistence:
             agent_state:
-              backend: default
+              backend: kv_default
               namespace: "agent_state"
             responses:
-              backend: sql
+              backend: sql_default
               namespace: "agents"
               table_name: "responses"
       eval:
@@ -67,7 +67,7 @@ data:
         provider_type: inline::meta-reference
         config:
           kvstore:
-            backend: default
+            backend: kv_default
             namespace: "eval"
       safety:
       - provider_id: llama-guard
@@ -106,7 +106,7 @@ data:
         provider_type: inline::localfs
         config:
           metadata_store:
-            backend: sql
+            backend: sql_default
             namespace: "files"
             table_name: "files_metadata"
           storage_dir: /opt/app-root/src/.llama/distributions/rh/files
@@ -115,13 +115,13 @@ data:
         provider_type: remote::huggingface
         config:
           kvstore:
-            backend: default
+            backend: kv_default
             namespace: "huggingface"
       - provider_id: localfs
         provider_type: inline::localfs
         config:
           kvstore:
-            backend: default
+            backend: kv_default
             namespace: "localfs"
       scoring:
       - provider_id: basic
@@ -138,32 +138,36 @@ data:
         provider_type: remote::tavily-search
         config:
           api_key: ${env.TAVILY_SEARCH_API_KEY:=}
-          max_results: 3        
+          max_results: 3
+      - provider_id: wolfram-alpha
+        provider_type: remote::wolfram-alpha
+        config:
+          api_key: ${env.WOLFRAM_ALPHA_API_KEY:=}
       - provider_id: model-context-protocol
         provider_type: remote::model-context-protocol
         config: {}
     metadata_store:
-      backend: default
+      backend: kv_default
       namespace: "metadata"
     storage:
       backends:
-        default:
+        kv_default:
           type: kv_sqlite
           db_path: /opt/app-root/src/.llama/distributions/rh/storage.db
           namespace: null
-        sql:
+        sql_default:
           type: sql_sqlite
           db_path: /opt/app-root/src/.llama/distributions/rh/sql_storage.db
       stores:
         metadata:
-          backend: default
+          backend: kv_default
           namespace: "llama-stack"
         conversations:
-          backend: sql
+          backend: sql_default
           namespace: "conversations"
           table_name: "conversations"
         inference:
-          backend: sql
+          backend: sql_default
           namespace: "inference"
           table_name: "inference"
     registered_resources:
@@ -195,6 +199,16 @@ data:
       - toolgroup_id: builtin::rag
         provider_id: rag-runtime
       - toolgroup_id: builtin::websearch
-        provider_id: tavily-search      
+        provider_id: tavily-search
+      - toolgroup_id: builtin::math
+        provider_id: wolfram-alpha 
+      - toolgroup_id: mcp::customer
+        provider_id: model-context-protocol
+        mcp_endpoint:
+          uri: "${env.CUSTOMER_MCP_URL}"
+      - toolgroup_id: mcp::finance
+        provider_id: model-context-protocol
+        mcp_endpoint:
+          uri: "${env.FINANCE_MCP_URL}"
     server:
       port: 8321

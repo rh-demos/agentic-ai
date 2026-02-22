@@ -2,8 +2,8 @@ apiVersion: llamastack.io/v1alpha1
 kind: LlamaStackDistribution
 metadata:
   annotations:
-    openshift.io/display-name: llamastack-distribution-vllm
-  name: llamastack-distribution-vllm
+    openshift.io/display-name: llamastack-distribution
+  name: llamastack-distribution
   labels:
     opendatahub.io/dashboard: 'true'
 spec:
@@ -33,6 +33,10 @@ spec:
           value: 'false'
         - name: LLAMA_STACK_LOGGING
           value: all=info
+        - name: CUSTOMER_MCP_URL
+          value: 'http://mcp-customer-service:9001/mcp'
+        - name: FINANCE_MCP_URL
+          value: 'http://mcp-finance-service:9002/mcp'
       name: llama-stack
       port: 8321
       resources:
@@ -43,7 +47,7 @@ spec:
           cpu: 250m
           memory: 500Mi
     distribution:
-      name:  rh-dev
+      image: 'quay.io/jonkey/llama-stack:rhoai-v3.2-1'
     userConfig:
       configMapName: llama-stack-config
     storage:
