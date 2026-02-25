@@ -12,7 +12,7 @@ spec:
     containerSpec:
       env:
         - name: VLLM_API_URL
-          value: 'http://qwen3-8b-predictor.agentic-ai.svc.cluster.local:8080/v1'
+          value: 'http://qwen3-8b-predictor:8080/v1'
         - name: VLLM_API_TOKEN
           value: 'your_token'
         - name: VLLM_TLS_VERIFY
