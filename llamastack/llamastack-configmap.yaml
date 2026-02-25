@@ -212,3 +212,27 @@ data:
           uri: "${env.FINANCE_MCP_URL}"
     server:
       port: 8321
+      auth:
+        provider_config:
+          type: "kubernetes"
+          api_server_url: "https://kubernetes.default.svc"
+          claims_mapping:
+            username: "roles"
+            groups: "roles"
+            uid: "uid_attr"
+          verify_tls: false
+        access_policy:
+        - permit:
+            principal: system:serviceaccount:ai-demo:usera
+            actions: [read]
+            resource: model::vllm/qwen3-8b
+          description: specific serviceaccount has full access to qwen
+        - permit:
+            principal: system:serviceaccount:ai-demo:userb
+            actions: [read]
+            resource: model::vllm/qwen3-14b
+          description: default account has no access to vllm 
+        - permit:
+            principal: user-1
+            actions: [create, read, delete]
+          description: user-1 has full access to all resources
