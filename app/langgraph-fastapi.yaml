@@ -24,11 +24,11 @@ spec:
         - name: INFERENCE_MODEL
           value: vllm/qwen3-8b
         - name: API_KEY
-          value: fake
-        - name: CUSTOMER_MCP_SERVER_URL
-          value: http://mcp-customer-service:9001/mcp
-        - name: FINANCE_MCP_SERVER_URL
-          value: http://mcp-finance-service:9002/mcp
+          value: "fake"
+        - name: INFERENCE_MODEL
+          value: vllm/qwen3-8b
+        - name: TAVILY_SEARCH_API_KEY
+          value: ""
 
         ports:
         - containerPort: 8000
