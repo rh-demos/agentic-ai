@@ -32,6 +32,11 @@ data:
           api_token: ${env.VLLM_API_TOKEN:=fake}
           tls_verify: ${env.VLLM_TLS_VERIFY:=false}
           max_tokens: ${env.VLLM_MAX_TOKENS:=4096}
+      - provider_id: openrouter
+        provider_type: remote::openai
+        config:
+          base_url: ${env.OPENAI_BASE_URL:=fake}
+          api_key: ${env.OPENAI_API_KEY:=fake}
       - provider_id: llama-guard
         provider_type: remote::vllm
         config:
