@@ -6,7 +6,7 @@ metadata:
     llamastack.io/distribution: llamastack-dist-agentic
     opendatahub.io/dashboard: 'true'
 data:
-  run.yaml: |
+  config.yaml: |
     # Llama Stack Configuration
     version: "2"
     image_name: llama-stack
