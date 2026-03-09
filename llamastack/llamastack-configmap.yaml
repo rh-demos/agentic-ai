@@ -28,7 +28,7 @@ data:
       - provider_id: vllm
         provider_type: remote::vllm
         config:
-          url: ${env.VLLM_API_URL:=fake}
+          base_url: ${env.VLLM_API_URL:=fake}
           api_token: ${env.VLLM_API_TOKEN:=fake}
           tls_verify: ${env.VLLM_TLS_VERIFY:=false}
           max_tokens: ${env.VLLM_MAX_TOKENS:=4096}
@@ -40,7 +40,7 @@ data:
       - provider_id: llama-guard
         provider_type: remote::vllm
         config:
-          url: ${env.GUARD_API_URL:=fake}
+          base_url: ${env.GUARD_API_URL:=fake}
           api_token: ${env.GUARD_API_TOKEN:=fake}
           tls_verify: ${env.GUARD_TLS_VERIFY:=false}
           max_tokens: ${env.GUARD_MAX_TOKENS:=4096}
