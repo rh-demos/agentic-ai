@@ -8,6 +8,11 @@ metadata:
     opendatahub.io/dashboard: 'true'
 spec:
   replicas: 1
+  network:
+    allowedFrom:
+      namespaces:
+        - '*'
+    exposeRoute: false
   server:
     containerSpec:
       env:
